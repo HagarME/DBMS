@@ -1,0 +1,53 @@
+﻿@page
+@model dashProject.Pages.EditDepartmentModel
+@{
+    ViewData["Title"] = "Edit Department";
+}
+
+<form method="post">
+    <div class="section-box">
+        <h4 class="section-title">Department Information</h4>
+
+        <div class="grid-2">
+            <div>
+                <label>Dept_ID <span class="required-star">*</span></label>
+                <input asp-for="DeptId" type="number" class="input-field readonly-field" readonly />
+            </div>
+            <div>
+                <label>Specialization <span class="required-star">*</span></label>
+                <input asp-for="Specialization" type="text" class="input-field" required />
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Description</label>
+            <textarea asp-for="Description" class="input-field"></textarea>
+        </div>
+    </div>
+
+    <div class="section-box">
+        <h4 class="section-title">Department Manager</h4>
+
+        <div>
+            <label>Manager</label>
+            <select asp-for="MgrSsn" class="select-field">
+                <option value="">-- No Manager --</option>
+                @foreach (System.Data.DataRow row in Model.AllEmployees.Rows)
+                {
+                    <option value="@row["ssn"]">
+                        @row["Fname"] @row["Lname"] (@row["ssn"])
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="primary-btn">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+            <a asp-page="/Departments" class="secondary-btn">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </div>
+</form>

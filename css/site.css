@@ -1,0 +1,1437 @@
+:root {
+    --primary: #ffc107;
+    /* Yellow */
+    --sidebar-bg: #2d2d2d;
+    /* Dark Gray */
+    --sidebar-text: #fff;
+    --bg-light: #f5f5f5;
+    --sidebar-width-collapsed: 72px;
+    --sidebar-width-expanded: 240px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-light);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+    width: var(--sidebar-width-collapsed);
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: width 0.3s ease-in-out;
+    overflow-x: hidden;
+    white-space: nowrap;
+    z-index: 1000;
+    -ms-overflow-style: none;
+}
+
+.sidebar:hover {
+    width: var(--sidebar-width-expanded);
+    overflow-x: hidden;
+}
+
+/* BRAND LOGO */
+.brand {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding-left: 24px;
+    /* Aligns with menu text */
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary);
+    background-color: #222;
+    border-bottom: 1px solid #444;
+    overflow: hidden;
+    /* Ensures text doesn't spill out when collapsed */
+}
+
+/* 1. HIDE DASH WORD WHEN COLLAPSED */
+.brand span {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    pointer-events: none;
+    /* Prevents clicking when hidden */
+}
+
+.sidebar:hover .brand span {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* MENU ITEMS */
+.menu-list {
+    flex-grow: 1;
+    padding-top: 10px;
+    overflow-y: auto;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 24px;
+    color: #ccc;
+    text-decoration: none;
+    transition: all 0.2s;
+    border-left: 4px solid transparent;
+    /* Invisible border to keep alignment */
+}
+
+.menu-item i {
+    font-size: 20px;
+    min-width: 30px;
+    text-align: center;
+    color: var(--primary);
+    transition: color 0.2s;
+}
+
+.menu-item span {
+    margin-left: 20px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.sidebar:hover .menu-item span {
+    opacity: 1;
+}
+
+/* 2. ACTIVE & HOVER (NO WHITE STRIP) */
+.menu-item:hover,
+.menu-item.active {
+    background-color: var(--primary);
+    color: #2d2d2d !important;
+    /* border-left: 4px solid #fff;  <-- REMOVED THIS */
+}
+
+.menu-item:hover i,
+.menu-item.active i {
+    color: #2d2d2d !important;
+}
+
+/* --- MAIN CONTENT --- */
+.main-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.top-navbar {
+    height: 60px;
+    background-color: #3d3d3d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    border-bottom: 1px solid #ddd;
+    flex-shrink: 0;
+}
+
+.page-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffc107;
+}
+
+.user-actions i {
+    font-size: 18px;
+    margin-left: 20px;
+    color: #ffc107;
+    cursor: pointer;
+}
+
+.user-actions i:hover {
+    color: var(--primary);
+}
+
+.content-container {
+    padding: 30px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+/* Utils */
+.table-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* --- GLOBAL BUTTONS --- */
+.btn-standard,
+.action-btn,
+.add-btn,
+.primary-btn,
+.btn-brand,
+.action-button,
+.search-section button,
+.submit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+}
+
+/* Default Colors for shared classes */
+.action-btn,
+.add-btn,
+.primary-btn,
+.btn-brand,
+.action-button,
+.search-section button,
+.submit-btn {
+    background-color: var(--primary);
+    color: #000 !important;
+}
+
+.action-btn:hover,
+.add-btn:hover,
+.primary-btn:hover,
+.btn-brand:hover,
+.action-button:hover,
+.search-section button:hover,
+.submit-btn:hover {
+    background-color: #e0a800;
+}
+
+.btn-yellow,
+.btn-red,
+.btn-dark,
+.btn-grey {
+    background-color: var(--primary) !important;
+    color: #000 !important;
+}
+
+.btn-yellow:hover,
+.btn-red:hover,
+.btn-dark:hover,
+.btn-grey:hover {
+    background-color: #e0a800 !important;
+}
+
+/* Color variations */
+.btn-red {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+}
+
+.btn-red:hover {
+    background-color: #c82333 !important;
+}
+
+.btn-grey {
+    background-color: #6c757d !important;
+    color: #fff !important;
+}
+
+.btn-grey:hover {
+    background-color: #5a6268 !important;
+}
+
+/* Equal width buttons when in a group */
+.button-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.button-group>button,
+.button-group>a {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+}
+
+/* Table action buttons - equal width */
+.table-actions {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.table-actions>button,
+.table-actions>a,
+.table-actions>form>button {
+    min-width: 80px;
+    justify-content: center;
+}
+
+
+
+/*      --- DASHBOARD ---      */
+
+/* METRIC CARDS */
+.metrics-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.metric-card {
+    background: #fff;
+    flex: 1 1 calc(33% - 20px);
+    padding: 22px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #ffc107;
+}
+
+.metric-card p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+}
+
+.metric-card h2 {
+    font-size: 34px;
+    margin-top: 5px;
+    color: #222;
+}
+
+/* ACTIVITIES TABLE */
+.activities-box {
+    margin-top: 42px;
+    background: #fff;
+    padding: 22px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.activities-box h3 {
+    margin-bottom: 15px;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 12px;
+    color: #555;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #f3f3f3;
+    color: #444;
+}
+
+/* Search Section */
+
+/* Search Section */
+.search-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.search-section input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Simplification: removed override */
+
+/* Add Client Section */
+.add-section {
+    margin-bottom: 25px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.add-section h4 {
+    color: #ffc107;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #eee;
+    font-size: 14px;
+}
+
+.form-row textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+/* Simplification: removed override */
+
+/* Clients Table */
+.clients-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.clients-table th {
+    text-align: left;
+    padding: 15px 20px;
+    color: #ffc107;
+    font-weight: 600;
+    font-size: 16px;
+    border-bottom: 2px solid #333;
+    background-color: #fafafa;
+}
+
+.clients-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #333;
+    color: #333;
+    font-size: 15px;
+}
+
+.clients-table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+/* Action Buttons */
+/* Simplification: removed override */
+
+/*      --- DEPARTMENTS ---      */
+
+/* ===================== SECTIONS ===================== */
+.section-box {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.section-title {
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.input-field,
+.select-field {
+    width: 100%;
+    padding: 12px;
+    background-color: #e0e0e0;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+textarea.input-field {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Simplification: removed previous override placeholders */
+
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    color: #333;
+}
+
+thead {
+    background-color: #fafafa;
+    border-bottom: 2px solid #333;
+}
+
+th {
+    padding: 12px;
+    text-align: left;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.table-actions {
+    display: inline-flex;
+    gap: 6px;
+}
+
+/* Simplification: removed previous override placeholders */
+
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+
+/*      --- DOCUMENTS ---      */
+/* Search Section */
+.search-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.search-section input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Simplification: removed previous override placeholders */
+
+/* Add Document Section */
+.add-section {
+    margin-bottom: 25px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.add-section h4 {
+    color: #ffc107;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #eee;
+    font-size: 14px;
+}
+
+.form-row textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Standardized buttons */
+.add-btn {
+    /* Styles inherited from site.css global grouping */
+}
+
+/* Documents Table */
+.documents-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+
+.documents-table th {
+    text-align: left;
+    padding: 15px 20px;
+    color: #ffc107;
+    font-weight: 600;
+    font-size: 16px;
+    border-bottom: 2px solid #333;
+    background-color: #fafafa;
+}
+
+.documents-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #333;
+    color: #333;
+    font-size: 15px;
+}
+
+.documents-table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+/* Action Buttons */
+/* Document Table Action buttons (Standardized via global CSS) */
+
+
+
+/*      --- EMAIL ---      */
+.email-container {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 25px;
+    height: calc(100vh - 140px);
+}
+
+.email-list-panel {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.panel-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2d2d2d;
+    margin-bottom: 20px;
+}
+
+.email-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e5e5e5;
+    padding-bottom: 0;
+}
+
+.email-tab {
+    padding: 10px 22px;
+    border: none;
+    background-color: transparent;
+    color: #666;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+}
+
+.email-tab.active {
+    background-color: #ffc107;
+    color: #2d2d2d;
+    border-radius: 4px 4px 0 0;
+}
+
+.email-tab:hover:not(.active) {
+    color: #2d2d2d;
+    background-color: #f0f0f0;
+}
+
+.email-table-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.email-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.email-table thead {
+    background-color: #fafafa;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.email-table th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.email-table td {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+    font-size: 14px;
+}
+
+.email-table tbody tr {
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.email-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.email-table tbody tr.selected {
+    background-color: #fff9e6;
+}
+
+.email-table td.email-status-unread {
+    color: #dc3545;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.email-table td.email-status-read {
+    color: #28a745;
+    font-size: 13px;
+}
+
+.email-actions {
+    display: flex;
+    gap: 12px;
+    padding-top: 15px;
+    border-top: 1px solid #e5e5e5;
+}
+
+/* Email Panel Action buttons */
+.action-button {
+    /* Styled via global grouping */
+}
+
+.email-preview-panel {
+    background-color: #fafafa;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+}
+
+.preview-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d2d2d;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.preview-info {
+    margin-bottom: 18px;
+}
+
+.preview-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.preview-value {
+    font-size: 14px;
+    color: #2d2d2d;
+    margin: 0;
+}
+
+.preview-message {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 2px solid #e5e5e5;
+}
+
+.preview-message p {
+    line-height: 1.7;
+    color: #333;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+
+/*      --- EMPLOYEES ---      */
+
+h3 {
+    color: #ffc107;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+
+/* SEARCH */
+.search-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.search-section input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    flex: 1;
+}
+
+.search-section button {
+    padding: 10px 20px;
+    background-color: #ffc107;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+
+/* ADD SECTION */
+.add-section h4 {
+    color: #ffc107;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.add-section p {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-row input,
+.form-row select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #eee;
+}
+
+
+.add-btn {
+    padding: 10px 20px;
+    background-color: #ffc107;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+
+/* --------------------------------------------
+               TABLE
+               --------------------------------------------*/
+.employee-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.employee-table th {
+    text-align: left;
+    padding: 12px;
+    color: #ffc107;
+    font-weight: 700;
+    border-bottom: 2px solid #333;
+}
+
+.employee-table td {
+    padding: 12px;
+    border-bottom: 1px solid #333;
+    color: #333;
+}
+
+.employee-table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+
+/* Removed duplicate .action-btn definition - using global definition instead */
+
+
+/*      --- INDEX ---      */
+.dashboard-note {
+    background: #fff3cd;
+    border-left: 5px solid #ffc107;
+    padding: 18px;
+    border-radius: 8px;
+    margin-bottom: 22px;
+    font-size: 16px;
+}
+
+/*      --- OFFICE REQUESTS ---      */
+/* FORM CARD */
+.request-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 24px;
+    max-width: 720px;
+    margin: auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.request-card h4 {
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: #2d2d2d;
+}
+
+.submit-btn {
+    background: #ffc107;
+    border: none;
+    font-weight: 700;
+}
+
+.submit-btn:hover {
+    background: #e0aa06;
+}
+
+
+/*      --- REPORTS ---      */
+.filter-bar {
+    background: #fff;
+    padding: 14px;
+    border-radius: 8px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+
+.filter-col {
+    min-width: 160px;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.chart-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-title {
+    font-weight: 700;
+    color: #2d2d2d;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 18px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.stat-card .value {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffc107;
+}
+
+.stat-card .label {
+    color: #666;
+    margin-top: 6px;
+    font-size: 13px;
+}
+
+@media (max-width: 992px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-col {
+        min-width: 120px;
+    }
+}
+
+.chart-card canvas {
+    width: 100% !important;
+    height: 260px !important;
+    max-height: 260px !important;
+    display: block;
+}
+
+
+/*      --- TASLS ---      */
+
+.task-section {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.task-section h2 {
+    font-size: 22px;
+    color: #333;
+    margin-top: 0;
+    border-bottom: 2px solid #ffb703;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    display: inline-block;
+}
+
+/* Input and Button Styles */
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.search-inputs {
+    display: flex;
+    gap: 10px;
+}
+
+.search-inputs input {
+    flex-grow: 1;
+}
+
+.search-inputs button {
+    flex-shrink: 0;
+    width: 120px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row>div {
+    flex: 1;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #ffb703;
+    /* Yellow button */
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #e6a700;
+}
+
+/* Table Styles */
+.tasks-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tasks-table th,
+.tasks-table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.tasks-table th {
+    background-color: #f4f4f4;
+    color: #555;
+    font-size: 14px;
+}
+
+.actions button {
+    padding: 5px 10px;
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+.actions .update-btn {
+    background-color: #ffb703;
+}
+
+.actions .delete-btn {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.actions .view-btn {
+    background-color: #2a9d8f;
+    color: white;
+}
+
+
+
+
+/*      --- EDIT CLIENT ---      */
+
+h3 {
+    color: #ffc107;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #eee;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.readonly-field {
+    background-color: #d0d0d0 !important;
+    cursor: not-allowed;
+}
+
+.save-btn {
+    padding: 10px 20px;
+    background-color: #ffc107;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.save-btn:hover {
+    background-color: #e0a800;
+}
+
+.cancel-link {
+    padding: 10px 20px;
+    background-color: #222;
+    color: #ffc107;
+    border: 2px solid #ffc107;
+    border-radius: 4px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.cancel-link:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+
+
+/*      --- EDIT DEPARTMENT ---      */
+
+.section-box {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.section-title {
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.input-field,
+.select-field {
+    width: 100%;
+    padding: 12px;
+    background-color: #e0e0e0;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+textarea.input-field {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.readonly-field {
+    background-color: #d0d0d0;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* Removed duplicate .primary-btn and .secondary-btn definitions - using global definition instead */
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.alert-message {
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+}
+
+.form-hint {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.required-star {
+    color: #dc3545;
+}
+
+
+/*      --- EDIT EMPLOYEE ---      */
+.section-box {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.section-title {
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.input-field,
+.select-field {
+    width: 100%;
+    padding: 12px;
+    background-color: #e0e0e0;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+textarea.input-field {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.readonly-field {
+    background-color: #d0d0d0;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* Removed duplicate .primary-btn and .secondary-btn definitions - using global definition instead */
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.alert-message {
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+}
+
+.required-star {
+    color: #dc3545;
+}
+
+
+/*      --- SETTINGS ---      */
+.settings-card {
+    background: white;
+    padding: 30px;
+    border-radius: 5px;
+    min-height: 600px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.internal-link {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.internal-link:hover {
+    background-color: #eee;
+}
+
+.active-yellow {
+    background-color: var(--primary);
+    color: black;
+    font-weight: bold;
+}
+
+.btn-brand {
+    background-color: #ffc107;
+    color: black;
+    font-weight: bold;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 4px;
+}
+
+.btn-brand:hover {
+    background-color: #e6c200;
+}
+
+
+/* --- SWITCH FIXES --- */
+/* 1. Reset margins so it sits inside the box */
+.custom-switch {
+    width: 3.5em !important;
+    height: 1.8em !important;
+    cursor: pointer;
+    margin: 0 !important;
+    /* Forces it to stay in the box */
+    box-shadow: none !important;
+    flex-shrink: 0;
+}
+
+/* 2. Yellow Background when checked */
+.form-check-input:checked {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    /* SVG for the black knob */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23000'/%3e%3c/svg%3e");
+}

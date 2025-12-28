@@ -1,0 +1,137 @@
+﻿@page
+@using System.Data
+@model dashProject.Pages.AddEmployeeModel
+@{
+    ViewData["Title"] = "Add New Employee";
+}
+
+<form method="post">
+    <div class="section-box">
+        <h4 class="section-title">Personal Information</h4>
+        <div class="grid-2">
+            <div>
+                <label>SSN <span class="required-star">*</span></label>
+                <input asp-for="Ssn" type="text" class="input-field" placeholder="e.g., 123456789" required />
+            </div>
+            <div>
+                <label>First Name <span class="required-star">*</span></label>
+                <input asp-for="Fname" type="text" class="input-field" placeholder="First Name" required />
+            </div>
+            <div>
+                <label>Middle Initial</label>
+                <input asp-for="Minit" type="text" class="input-field" placeholder="M" />
+            </div>
+            <div>
+                <label>Last Name <span class="required-star">*</span></label>
+                <input asp-for="Lname" type="text" class="input-field" placeholder="Last Name" required />
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div>
+                <label>Email</label>
+                <input asp-for="Email" type="email" class="input-field" placeholder="email@example.com" />
+            </div>
+            <div>
+                <label>Phone Number</label>
+                <input asp-for="PhoneNumber" type="text" class="input-field" placeholder="+20 123 456 7890" />
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div>
+                <label>Password</label>
+                <input asp-for="Password" type="password" class="input-field" placeholder="Enter password" />
+            </div>
+        </div>
+    </div>
+
+    <div class="section-box">
+        <h4 class="section-title">Employment Details</h4>
+
+        @if (Model.UserRole == "admin")
+        {
+            <!-- ADMIN VIEW: Can select any role and department -->
+            <div class="grid-2">
+                <div>
+                    <label>Role</label>
+                    <input asp-for="Role" type="text" class="input-field" placeholder="e.g., Developer, Manager" />
+                </div>
+                <div>
+                    <label>Department</label>
+                    <select asp-for="DeptId" class="select-field">
+                        <option value="">-- No Department --</option>
+                        @foreach (System.Data.DataRow row in Model.AllDepartments.Rows)
+                        {
+                            <option value="@row["dept_id"]">
+                                @row["dept_id"] - @row["specialization"]
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label>Supervisor</label>
+                    <select asp-for="SuperSsn" class="select-field">
+                        <option value="">-- No Supervisor --</option>
+                        @if (Model.AllEmployees != null && Model.AllEmployees.Rows.Count > 0)
+                        {
+                            @foreach (System.Data.DataRow row in Model.AllEmployees.Rows)
+                            {
+                                <option value="@row["ssn"]">
+                                    @row["Fname"] @row["Lname"] (@row["ssn"])
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+        else if (Model.UserRole == "manager")
+        {
+            <!-- MANAGER VIEW: Role and Department are fixed -->
+            <div class="grid-2">
+                <div>
+                    <label>Role <i class="fas fa-lock" style="color: #ffc107;"></i></label>
+                    <input type="text" value="Employee" class="input-field readonly-field" readonly />
+                    <input asp-for="Role" type="hidden" value="employee" />
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        <i class="fas fa-info-circle"></i> Managers can only add employees
+                    </small>
+                </div>
+                <div>
+                    <label>Department <i class="fas fa-lock" style="color: #ffc107;"></i></label>
+                    @{
+                        var deptName = Model.AllDepartments.AsEnumerable()
+                        .FirstOrDefault(r => r["dept_id"].ToString() == Model.UserDeptId)?["specialization"]?.ToString() ?? "Your Department";
+                    }
+                    <input type="text" value="@deptName" class="input-field readonly-field" readonly />
+                    <input asp-for="DeptId" type="hidden" value="@Model.UserDeptId" />
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        <i class="fas fa-info-circle"></i> Employee will be added to your department
+                    </small>
+                </div>
+                <div>
+                    <label>Supervisor</label>
+                    <select asp-for="SuperSsn" class="select-field">
+                        <option value="">-- No Supervisor --</option>
+                        @foreach (System.Data.DataRow row in Model.AllEmployees.Rows)
+                        {
+                            <option value="@row["ssn"]">
+                                @row["Fname"] @row["Lname"] (@row["ssn"])
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+
+        <div class="button-group">
+            <button type="submit" class="primary-btn">
+                <i class="fas fa-save"></i> Add Employee
+            </button>
+            <a asp-page="/Employees" class="secondary-btn">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </div>
+</form>

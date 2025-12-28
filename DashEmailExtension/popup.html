@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { width: 300px; font-family: sans-serif; padding: 10px; }
+    input, textarea { width: 100%; margin-bottom: 10px; box-sizing: border-box; }
+    button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .status { margin-top: 10px; font-size: 12px; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h3>Save to DASH</h3>
+  <label>Sender:</label>
+  <input type="text" id="sender" placeholder="sender@example.com">
+  
+  <label>Subject:</label>
+  <input type="text" id="subject" placeholder="Email Subject">
+  
+  <label>Body:</label>
+  <textarea id="body" rows="6" placeholder="Paste email content here..."></textarea>
+  
+  <button id="saveBtn">Save Email</button>
+  <div id="status" class="status"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

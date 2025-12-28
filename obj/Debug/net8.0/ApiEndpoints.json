@@ -1,0 +1,44 @@
+[
+  {
+    "ContainingType": "dashProject.Controllers.EmailController",
+    "Method": "GetStatus",
+    "RelativePath": "api/Email",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "dashProject.Controllers.EmailController",
+    "Method": "IngestEmail",
+    "RelativePath": "api/Email/ingest",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "email",
+        "Type": "dashProject.Controllers.EmailDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "dashProject.Controllers.EmailController",
+    "Method": "IngestRawEmail",
+    "RelativePath": "api/Email/ingest-raw",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "raw",
+        "Type": "dashProject.Controllers.RawEmailDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

@@ -1,0 +1,19 @@
+{
+    "manifest_version": 3,
+    "name": "DASH Email Clipper",
+    "version": "1.0",
+    "description": "Save emails to DASH system.",
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "Save to DASH"
+    },
+    "host_permissions": [
+        "https://localhost:7190/*",
+        "http://localhost:5004/*",
+        "https://mail.google.com/*"
+    ]
+}
