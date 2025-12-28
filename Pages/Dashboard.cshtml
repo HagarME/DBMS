@@ -1,0 +1,147 @@
+﻿@page
+@model dashProject.Pages.DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>@(Model.UserRole == "manager" ? "Department Clients" : "Total Clients")</h3>
+        <p class="number">@Model.TotalClients</p>
+    </div>
+    <div class="stat-card">
+        <h3>@(Model.UserRole == "manager" ? "Department Employees" : "Total Employees")</h3>
+        <p class="number">@Model.TotalEmployees</p>
+    </div>
+    <div class="stat-card">
+        <h3>@(Model.UserRole == "manager" ? "Department Open Projects" : "Open Projects")</h3>
+        <p class="number">@Model.OpenProjects</p>
+    </div>
+    <div class="stat-card">
+        <h3>@(Model.UserRole == "manager" ? "Department Pending Tasks" : "Pending Tasks")</h3>
+        <p class="number">@Model.PendingTasks</p>
+    </div>
+    <div class="stat-card">
+        <h3>Unread Emails</h3>
+        <p class="number">@Model.UnreadEmails</p>
+    </div>
+    <div class="stat-card">
+        <h3>@(Model.UserRole == "manager" ? "Department Requests" : "Office Requests")</h3>
+        <p class="number">@Model.OfficeRequests</p>
+    </div>
+</div>
+
+<div class="recent-activities">
+    <h2>Recent Activities @(Model.UserRole == "manager" ? "- Department" : "")</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Activity</th>
+                <th>User</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.RecentActivities != null && Model.RecentActivities.Rows.Count > 0)
+            {
+                @foreach (System.Data.DataRow activity in Model.RecentActivities.Rows)
+                {
+                    <tr>
+                        <td>@activity["TimeAgo"]</td>
+                        <td>@activity["Activity"]</td>
+                        <td>@activity["User"]</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" style="text-align: center; color: #666;">No recent activities.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<style>
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: white;
+        border: 4px solid #ffc107;
+        border-radius: 12px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .stat-card h3 {
+            color: #333;
+            font-size: 18px;
+            margin: 0 0 15px 0;
+            font-weight: 600;
+        }
+
+        .stat-card .number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #000;
+            margin: 0;
+        }
+
+    .recent-activities {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        padding: 25px;
+    }
+
+        .recent-activities h2 {
+            color: #ffc107;
+            font-size: 24px;
+            margin: 0 0 20px 0;
+            font-weight: 600;
+        }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: #333;
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+    }
+
+    tr:hover {
+        background: #f9f9f9;
+    }
+</style>

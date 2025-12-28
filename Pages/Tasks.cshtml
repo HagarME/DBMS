@@ -1,0 +1,196 @@
+﻿@page
+@using System.Data
+@model dashProject.Pages.TasksModel
+@{
+    ViewData["Title"] = "Tasks";
+}
+
+<style>
+    /* Custom Task Page Styles */
+
+    .tasks-container {
+        /* Removed main-content padding that conflicted with layout */
+        max-width: 1200px;
+        margin: auto;
+        padding-top: 20px;
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 30px;
+        box-shadow: 0 6px 16px rgba(0,0,0,.08);
+    }
+
+    h2 {
+        margin-bottom: 15px;
+    }
+
+    .divider {
+        height: 3px;
+        background: #ffc107;
+        margin-bottom: 20px;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    input, textarea, select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        background: #f9f9f9;
+        font-family: inherit; /* Ensure font consistency */
+    }
+
+    textarea {
+        min-height: 70px;
+        resize: vertical;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+        gap: 20px;
+    }
+
+    button {
+        background: #ffc107;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+
+</style>
+
+<!-- ================= MAIN CONTENT ================= -->
+<div class="tasks-container">
+    <!-- 🔍 SEARCH -->
+    <div class="card">
+        <h2>Search Task</h2>
+        <div class="divider"></div>
+        <form method="post" asp-page-handler="Search" class="grid">
+            <input asp-for="SearchText" placeholder="Enter ID or keyword..." />
+            <button type="submit" class="btn-standard">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </form>
+    </div>
+
+    <!-- ➕ ADD TASK -->
+    <div class="card">
+        <h2>Add New Task</h2>
+        <div class="divider"></div>
+
+        <form method="post" asp-page-handler="Add">
+
+
+
+            <div class="form-group">
+                <label>Assigning Department</label>
+                <select asp-for="DeptId" required>
+                    <option value="">Select department</option>
+                    @foreach (DataRow d in Model.departmentsTable.Rows)
+                    {
+                        <option value="@d["dept_id"]">@d["specialization"]</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea asp-for="Description" required></textarea>
+            </div>
+
+            <div class="grid">
+                <div class="form-group">
+                    <label>Assignment Date</label>
+                    <input asp-for="AssignDate" type="date" />
+                </div>
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <input asp-for="Deadline" type="date" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Employee Name</label>
+                <select asp-for="EmpSSN" required>
+                    <option value="">Select Employee</option>
+                    @foreach (DataRow e in Model.EmployeesList.Rows)
+                    {
+                        <option value="@e["ssn"]">@e["Fname"] @e["Lname"]</option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="btn-standard">
+                <i class="fas fa-plus-circle"></i> Add Task
+            </button>
+        </form>
+    </div>
+
+    <!-- 📋 TASKS TABLE -->
+    <div class="card">
+        <h2>All Assigned Tasks</h2>
+        <div class="divider"></div>
+
+        <div style="max-height: 600px; overflow-y: auto; overflow-x: auto; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border: 1px solid #eee;">
+            <table style="width:100%; border-collapse:separate; border-spacing: 0;">
+                <thead style="position: sticky; top: 0; z-index: 10;">
+                    <tr style="text-align:left;">
+                        <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Task ID</th>
+                        <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Description</th>
+                        <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Department</th>
+                        <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Deadline</th>
+                        <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Status</th>
+                        <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Submitting Employee</th>
+                        <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (DataRow r in Model.tasksTable.Rows)
+                    {
+                        <tr style="border-bottom:1px solid #eee; transition: background 0.2s;" onmouseover="this.style.background='#fffbeb'" onmouseout="this.style.background='white'">
+                            <td style="padding:12px; border-bottom: 1px solid #f3f4f6;">#@r["task_id"]</td>
+                            <td style="padding:12px; border-bottom: 1px solid #f3f4f6;">@r["description"]</td>
+                            <td style="padding:12px; border-bottom: 1px solid #f3f4f6;">
+                                <span style="background:#e9f7fe; color:#3182ce; padding:4px 8px; border-radius:4px; font-size:12px; font-weight: 600;">@r["assigning_department_name"]</span>
+                            </td>
+                            <td style="padding:12px; border-bottom: 1px solid #f3f4f6;">@Convert.ToDateTime(r["deadline"]).ToShortDateString()</td>
+                            <td style="padding:12px; border-bottom: 1px solid #f3f4f6;">
+                                <span style="background:#f0f0f0; color:#444; padding:4px 8px; border-radius:4px; font-size:12px; font-weight: 600;">@r["task_status"]</span>
+                            </td>
+                            <td style="padding:12px; border-bottom: 1px solid #f3f4f6;">@r["submitting_employee_name"]</td>
+                            <td style="padding:12px; white-space:nowrap; border-bottom: 1px solid #f3f4f6;">
+                                <div class="table-actions" style="display:inline-flex;">
+                                    <a asp-page="/UpdateTask" asp-route-id="@r["task_id"]" class="action-btn" title="Edit" style="background:#ffc107; color:black; padding:6px 10px; border-radius:4px; text-decoration:none; margin-right:5px; display: inline-flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="post" asp-page-handler="Delete" asp-route-id="@r["task_id"]" style="display:inline;" onsubmit="return confirm('Are you sure?');">
+                                            <button type="submit" class="btn-standard btn-red" title="Delete">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

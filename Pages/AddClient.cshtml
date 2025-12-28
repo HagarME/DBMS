@@ -1,0 +1,44 @@
+﻿@page
+@model dashProject.Pages.Clients.AddClientModel
+@{
+    ViewData["Title"] = "Add New Client";
+}
+
+<form method="post">
+    <div class="section-box">
+        <h4 class="section-title">Client Information</h4>
+        <div class="grid-2">
+            <div>
+                <label>SSN <span class="required-star">*</span></label>
+                <input asp-for="Ssn" type="text" class="input-field" placeholder="e.g., 123456789012345" required />
+            </div>
+            <div>
+                <label>Name <span class="required-star">*</span></label>
+                <input asp-for="Name" type="text" class="input-field" placeholder="e.g., John Doe" required />
+            </div>
+        </div>
+        <div class="grid-2">
+            <div>
+                <label>Email</label>
+                <input asp-for="Email" type="email" class="input-field" placeholder="e.g., john.doe@example.com" />
+            </div>
+            <div>
+                <label>Phone Number</label>
+                <input asp-for="PhoneNumber" type="tel" class="input-field" placeholder="e.g., +201234567890" />
+            </div>
+        </div>
+        <div style="margin-bottom: 15px;">
+            <label>Address</label>
+            <textarea asp-for="Address" class="input-field" placeholder="Enter client address..."></textarea>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button type="submit" class="primary-btn">
+            <i class="fas fa-save"></i> Add Client
+        </button>
+        <a asp-page="/Clients" class="secondary-btn">
+            <i class="fas fa-times"></i> Cancel
+        </a>
+    </div>
+</form>

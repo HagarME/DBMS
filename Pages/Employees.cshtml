@@ -1,0 +1,228 @@
+﻿@page
+@model dashProject.Pages.EmployeesModel
+@using System.Data
+
+@{
+    ViewData["Title"] = Model.UserRole == "manager" ? "Department Employees" : "Employees";
+}
+
+@functions {
+    // Safely read the first available column name from a DataRow
+    string GetCol(DataRow r, params string[] names)
+    {
+        foreach (var n in names)
+        {
+            if (r.Table.Columns.Contains(n) && r[n] != DBNull.Value)
+                return r[n].ToString();
+        }
+        return "";
+    }
+
+    // Build a full name using common column name variants
+    string GetFullName(DataRow r)
+    {
+        var first = GetCol(r, "Fname", "fname", "first_name", "FirstName", "firstName");
+        var minit = GetCol(r, "Minit", "minit", "Middlename", "MiddleInitial");
+        var last = GetCol(r, "Lname", "lname", "last_name", "LastName", "lastName");
+        if (!string.IsNullOrEmpty(first) && !string.IsNullOrEmpty(last))
+            return $"{first} {(string.IsNullOrEmpty(minit) ? "" : (minit + " "))}{last}".Trim();
+        if (!string.IsNullOrEmpty(first)) return first;
+        if (!string.IsNullOrEmpty(last)) return last;
+        return GetCol(r, "EmployeeName", "name", "full_name");
+    }
+
+    string SafeEmail(DataRow r) => GetCol(r, "email", "Email", "email_address", "EmailAddress");
+    string SafePhone(DataRow r) => GetCol(r, "phone_number", "Phone", "phone_number", "phone");
+    string SafeRole(DataRow r) => GetCol(r, "role", "Role");
+    string SafeDept(DataRow r) => GetCol(r, "dept_id", "DeptId", "dept");
+}
+
+<!-- Success/Error Messages -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Search Employee -->
+<div class="section-box">
+    <h4 class="section-title">Search Employee @(Model.UserRole == "manager" ? "(Department Only)" : "")</h4>
+    <form method="get">
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" name="searchTerm" placeholder="Enter Name, SSN, or Email" class="input-field" value="@Model.SearchTerm" />
+            <button type="submit" class="primary-btn">
+                <i class="fas fa-search"></i> Search
+            </button>
+            @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+            {
+                <a asp-page="/Employees" class="btn-standard btn-grey">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            }
+        </div>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+    {
+        @if (Model.SearchResult != null && Model.SearchResult.Rows.Count > 0)
+        {
+            <div style="margin-top: 20px; padding: 15px; background-color: #e8f5e9; border-radius: 4px; border-left: 4px solid #4caf50;">
+                <h5 style="color: #2e7d32; margin-bottom: 10px;">Search Result:</h5>
+                <table style="width: 100%; background: white; border-radius: 4px;">
+                    <thead>
+                        <tr>
+                            <th>SSN</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Role</th>
+                            @if (Model.UserRole == "admin")
+                            {
+                                <th>Dept ID</th>
+                            }
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (System.Data.DataRow row in Model.SearchResult.Rows)
+                        {
+                            <tr>
+                                <td>@GetCol(row, "ssn", "SSN")</td>
+                                <td>@GetFullName(row)</td>
+                                <td>@SafeEmail(row)</td>
+                                <td>@SafePhone(row)</td>
+                                <td>@SafeRole(row)</td>
+                                @if (Model.UserRole == "admin")
+                                {
+                                    <td>@SafeDept(row)</td>
+                                }
+                                <td>
+                                    <a asp-page="/EditEmployee" asp-route-ssn="@GetCol(row, "ssn", "SSN")" class="action-btn">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <form method="post" asp-page-handler="Delete" asp-route-ssn="@GetCol(row, "ssn", "SSN")" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this employee?');">
+                                        <button type="submit" class="btn-standard btn-red">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border-radius: 4px; border-left: 4px solid #ffc107;">
+                <p style="margin: 0; color: #856404;">No employee found matching: <strong>@Model.SearchTerm</strong></p>
+            </div>
+        }
+    }
+</div>
+
+<!-- Add New Employee Button -->
+@if (Model.UserRole == "admin" || Model.UserRole == "manager")
+{
+    <div style="margin-bottom: 25px;">
+        <a asp-page="/AddEmployee" class="primary-btn" style="text-decoration: none; display: inline-block;">
+            <i class="fas fa-plus"></i> Add New Employee
+        </a>
+        @if (Model.UserRole == "manager")
+        {
+            <span style="margin-left: 15px; color: #666; font-size: 14px;">
+                <i class="fas fa-info-circle"></i> You can only manage employees in your department
+            </span>
+        }
+    </div>
+}
+
+<!-- Employee List -->
+<div class="section-box">
+    <h4 class="section-title">
+        @if (Model.UserRole == "admin")
+        {
+            <text>All Employees (@Model.EmpCount)</text>
+        }
+        else if (Model.UserRole == "manager")
+        {
+            <text>Department Employees (@Model.EmpCount)</text>
+        }
+    </h4>
+    
+    <div style="max-height: 600px; overflow-y: auto; overflow-x: auto; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border: 1px solid #eee;">
+        <table style="width:100%; border-collapse:separate; border-spacing: 0;">
+            <thead style="position: sticky; top: 0; z-index: 10;">
+                <tr style="text-align:left;">
+                    <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">SSN</th>
+                    <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Name</th>
+                    <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Email</th>
+                    <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Phone</th>
+                    <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Role</th>
+                    @if (Model.UserRole == "admin")
+                    {
+                        <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Dept ID</th>
+                    }
+                    <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.dt != null && Model.dt.Rows.Count > 0)
+                {
+                    @foreach (System.Data.DataRow row in Model.dt.Rows)
+                    {
+                        <tr style="border-bottom:1px solid #eee; transition: background 0.2s;" onmouseover="this.style.background='#fffbeb'" onmouseout="this.style.background='white'">
+                            <td style="padding:12px; border-bottom: 1px solid #f3f4f6;">@GetCol(row, "ssn", "SSN")</td>
+                            <td style="padding:12px; font-weight:600; border-bottom: 1px solid #f3f4f6;">@GetFullName(row)</td>
+                            <td style="padding:12px; border-bottom: 1px solid #f3f4f6;">@SafeEmail(row)</td>
+                            <td style="padding:12px; border-bottom: 1px solid #f3f4f6;">@SafePhone(row)</td>
+                            <td style="padding:12px; border-bottom: 1px solid #f3f4f6;">
+                                <span style="background:#e9f7fe; color:#3182ce; padding:4px 8px; border-radius:4px; font-size:12px; font-weight: 600;">@SafeRole(row)</span>
+                            </td>
+                            @if (Model.UserRole == "admin")
+                            {
+                                <td style="padding:12px; border-bottom: 1px solid #f3f4f6;">@SafeDept(row)</td>
+                            }
+                            <td style="padding:12px; white-space:nowrap; border-bottom: 1px solid #f3f4f6;">
+                                <div class="table-actions">
+                                    <a asp-page="/EditEmployee" asp-route-ssn="@GetCol(row, "ssn", "SSN")" class="action-btn" title="Edit">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <form method="post" asp-page-handler="Delete" asp-route-ssn="@GetCol(row, "ssn", "SSN")" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this employee?');">
+                                        <button type="submit" class="action-btn btn-red" title="Delete">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="@(Model.UserRole == "admin" ? "7" : "6")" style="text-align: center; color: #666; padding: 20px;">
+                            @if (Model.UserRole == "manager")
+                            {
+                                <text>No employees found in your department.</text>
+                            }
+                            else
+                            {
+                                <text>No employees found.</text>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

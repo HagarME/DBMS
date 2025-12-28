@@ -1,0 +1,147 @@
+﻿@page
+@model dashProject.Pages.OfficeRequestsModel
+@{
+    ViewData["Title"] = "Office Requests";
+}
+
+
+
+<div class="request-card">
+    <h4><i class="fas fa-paper-plane" style="color:#ffc107;"></i> Issue a Request</h4>
+    <div class="divider"></div>
+    
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger" style="background:#f8d7da; color:#721c24; padding:15px; border-radius:6px; margin-bottom:20px;">
+            <i class="fas fa-exclamation-triangle"></i> @TempData["Error"]
+        </div>
+    }
+
+    <form method="post">
+        <div class="form-group">
+            <label>Client Reference</label>
+            <select asp-for="ClientId" class="form-control" required>
+                <option value="">-- Select Client --</option>
+                @foreach (System.Data.DataRow client in Model.Clients.Rows)
+                {
+                    <option value="@client["ssn"]">@client["name"] (@client["ssn"])</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Target Department</label>
+            <select asp-for="DeptId" class="form-control" required>
+                <option value="">-- Choose Department --</option>
+                @foreach (System.Data.DataRow dept in Model.Departments.Rows)
+                {
+                    <option value="@dept["dept_id"]">@dept["specialization"]</option>
+                }
+            </select>
+            <small style="color:#666;">Route your request to the appropriate team.</small>
+        </div>
+
+        <div class="form-group">
+            <label>Subject</label>
+            <input asp-for="RequestTitle" class="form-control" placeholder="Brief summary of your request" required />
+        </div>
+
+        <div class="form-group">
+            <label>Details</label>
+            <textarea asp-for="RequestBody" class="form-control" rows="5" placeholder="Provide as much detail as possible..." required></textarea>
+        </div>
+
+        <div class="text-end" style="margin-top:30px;">
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-paper-plane"></i> Submit Request
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .divider {
+        height: 3px;
+        background: #ffc107;
+        margin-bottom: 25px;
+        border-radius: 3px;
+        width: 60px;
+    }
+
+<style>
+
+
+    .request-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 30px;
+        max-width: 700px;
+        margin: 30px auto;
+    }
+
+        .request-card h4 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 16px;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .submit-btn {
+        background: #ffc107;
+        color: #000;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .submit-btn i {
+            font-size: 18px;
+        }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+</style>

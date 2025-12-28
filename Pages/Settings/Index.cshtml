@@ -1,0 +1,178 @@
+﻿@page
+@model dashProject.Pages.Settings.IndexModel
+@{
+    ViewData["Title"] = "My Account";
+}
+
+
+
+<div class="settings-section">
+    <h2 class="section-title">Settings</h2>
+    <div class="settings-card">
+        <div class="row">
+            <div class="col-md-3 border-end">
+                <h5 class="config-title">Configuration</h5>
+                <ul class="config-menu">
+                    <li class="active">
+                        <a asp-page="/Settings/Index">My Account</a>
+                    </li>
+                    <li>
+                        <a asp-page="/Settings/Security">Security & Access</a>
+                    </li>
+                    <li>
+                        <a asp-page="/Settings/Notifications">Notifications</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-9 px-4">
+                <h5 class="profile-title">Profile Information</h5>
+                <form method="post">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["Success"]</div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["Error"]</div>
+                    }
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">User ID</label>
+                            <input asp-for="UserId" class="form-control" readonly />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Employee Name</label>
+                            <input asp-for="EmployeeName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input asp-for="Email" class="form-control" type="email" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <input asp-for="Role" class="form-control" readonly />
+                    </div>
+                    <button type="submit" class="btn-brand">
+                        <i class="fas fa-save"></i> Update Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+
+
+    .section-title {
+        color: #ffc107;
+        font-size: 28px;
+        margin-bottom: 25px;
+        font-weight: 600;
+    }
+
+    .settings-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 30px;
+    }
+
+    .config-title {
+        color: #333;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .config-menu {
+        list-style: none;
+        padding: 0;
+    }
+
+        .config-menu li {
+            margin-bottom: 10px;
+        }
+
+        .config-menu a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            padding: 10px 15px;
+            display: block;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+            .config-menu a:hover {
+                background: #f8f9fa;
+            }
+
+        .config-menu .active {
+            background: #ffc107;
+            color: #000;
+            font-weight: 600;
+        }
+
+    .profile-title {
+        color: #333;
+        font-size: 22px;
+        margin-bottom: 25px;
+        font-weight: 600;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-control {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+
+        .form-control[readonly] {
+            background: #f8f9fa;
+        }
+
+    .btn-brand {
+        background: #ffc107;
+        color: #000;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+        .btn-brand:hover {
+            background: #e0c107;
+        }
+
+    .alert {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 6px;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background: #f8d7da;
+        color: #721c24;
+    }
+</style>

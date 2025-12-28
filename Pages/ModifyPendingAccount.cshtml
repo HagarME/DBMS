@@ -1,0 +1,89 @@
+@page
+@model dashProject.Pages.ModifyPendingAccountModel
+@{
+    ViewData["Title"] = "Review Account Request";
+}
+
+<div style="max-width: 800px; margin: auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="color: #ffc107; margin:0;">Review & Approve Account</h3>
+        <a asp-page="/PendingAccounts" style="color:#666; text-decoration:none; font-size:14px;"><i class="fas fa-arrow-left"></i> Back to List</a>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert alert-danger">@Model.Message</div>
+    }
+
+    <div style="background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08); border:1px solid #eee;">
+        <form method="post" asp-page-handler="Approve">
+            <input type="hidden" asp-for="RequestId" />
+            <input type="hidden" asp-for="Password" />
+
+            <div style="margin-bottom:25px;">
+                <h5 style="color:#444; border-bottom:2px solid #ffc107; padding-bottom:8px; margin-bottom:20px;">Personal Information</h5>
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label" style="font-weight:600; color:#666;">First Name</label>
+                        <input asp-for="Fname" class="form-control" required style="padding:10px;" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label" style="font-weight:600; color:#666;">Minit</label>
+                        <input asp-for="Minit" class="form-control" maxlength="1" style="padding:10px;" />
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label" style="font-weight:600; color:#666;">Last Name</label>
+                        <input asp-for="Lname" class="form-control" required style="padding:10px;" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-weight:600; color:#666;">SSN (Required)</label>
+                        <input asp-for="SSN" class="form-control" required placeholder="Enter unique SSN" style="padding:10px;" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-weight:600; color:#666;">Phone Number</label>
+                        <input asp-for="Phone" class="form-control" style="padding:10px;" />
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:25px;">
+                <h5 style="color:#444; border-bottom:2px solid #ffc107; padding-bottom:8px; margin-bottom:20px;">Account & Assignment</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-weight:600; color:#666;">Email</label>
+                        <input asp-for="Email" type="email" class="form-control" required style="padding:10px;" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-weight:600; color:#666;">Role</label>
+                        <select asp-for="Role" class="form-select" required style="padding:10px;">
+                            <option>admin</option>
+                            <option>manager</option>
+                            <option>employee</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-weight:600; color:#666;">Department</label>
+                        <select asp-for="DeptId" asp-items="Model.Departments" class="form-select" required style="padding:10px;">
+                            <option value="">-- Select Department --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-weight:600; color:#666;">Supervisor</label>
+                        <select asp-for="SuperSsn" asp-items="Model.Employees" class="form-select" style="padding:10px;">
+                            <option value="">-- None --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:15px; margin-top:30px;">
+                <button type="submit" class="btn-standard btn-yellow" style="flex:2; padding:15px; font-size:16px;">
+                    <i class="fas fa-user-plus"></i> Approve & Create Account
+                </button>
+                <a asp-page="/PendingAccounts" class="btn-standard btn-grey" style="flex:1; padding:15px; font-size:16px;">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

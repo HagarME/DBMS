@@ -1,0 +1,180 @@
+﻿@page
+@model dashProject.Pages.Clients.IndexModel
+@{
+    ViewData["Title"] = Model.UserRole == "manager" ? "Department Clients" : "Clients";
+}
+
+<!-- Success/Error Messages -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Search Client -->
+<div class="section-box">
+    <h4 class="section-title">Search Client @(Model.UserRole == "manager" ? "(Department Projects Only)" : "")</h4>
+    <form method="get">
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" name="searchTerm" placeholder="Enter Name, SSN, or Email" class="input-field" value="@Model.SearchTerm" />
+            <button type="submit" class="primary-btn">
+                <i class="fas fa-search"></i> Search
+            </button>
+            @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+            {
+                <a asp-page="/Clients" class="btn-standard btn-grey">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            }
+        </div>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+    {
+        @if (Model.SearchResult != null && Model.SearchResult.Rows.Count > 0)
+        {
+            <div style="margin-top: 20px; padding: 15px; background-color: #e8f5e9; border-radius: 4px; border-left: 4px solid #4caf50;">
+                <h5 style="color: #2e7d32; margin-bottom: 10px;">Search Result:</h5>
+                <table style="width: 100%; background: white; border-radius: 4px;">
+                    <thead>
+                        <tr>
+                            <th>SSN</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone Number</th>
+                            <th>Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (System.Data.DataRow client in Model.SearchResult.Rows)
+                        {
+                            <tr>
+                                <td>@client["ssn"]</td>
+                                <td>@client["name"]</td>
+                                <td>@client["email"]</td>
+                                <td>@client["phone_number"]</td>
+                                <td>@client["address"]</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a asp-page="/EditClient" asp-route-ssn="@client["ssn"]" class="action-btn">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        @if (Model.UserRole == "admin")
+                                        {
+                                            <button type="submit" class="btn-standard">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border-radius: 4px; border-left: 4px solid #ffc107;">
+                <p style="margin: 0; color: #856404;">No client found matching: <strong>@Model.SearchTerm</strong></p>
+            </div>
+        }
+    }
+</div>
+
+<!-- Add New Client Button -->
+@if (Model.UserRole == "admin" || Model.UserRole == "manager")
+{
+    <div style="margin-bottom: 25px;">
+        <a asp-page="/AddClient" class="primary-btn" style="text-decoration: none; display: inline-block;">
+            <i class="fas fa-plus"></i> Add New Client
+        </a>
+        @if (Model.UserRole == "manager")
+        {
+            <span style="margin-left: 15px; color: #666; font-size: 14px;">
+                <i class="fas fa-info-circle"></i> Viewing clients with projects in your department
+            </span>
+        }
+    </div>
+}
+
+<!-- All Clients -->
+<div class="section-box">
+    <h4 class="section-title">
+        @if (Model.UserRole == "admin")
+        {
+            <text>All Clients</text>
+        }
+        else if (Model.UserRole == "manager")
+        {
+            <text>Department Clients</text>
+        }
+    </h4>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>SSN</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Clients != null && Model.Clients.Rows.Count > 0)
+                {
+                    @foreach (System.Data.DataRow client in Model.Clients.Rows)
+                    {
+                        <tr>
+                            <td>@client["ssn"]</td>
+                            <td>@client["name"]</td>
+                            <td>@client["email"]</td>
+                            <td>@client["phone_number"]</td>
+                            <td>@client["address"]</td>
+                            <td>
+                                <div class="table-actions">
+                                    <a asp-page="/EditClient" asp-route-ssn="@client["ssn"]" class="action-btn">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    @if (Model.UserRole == "admin")
+                                    {
+                                            <button type="submit" class="btn-standard">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #666;">
+                            @if (Model.UserRole == "manager")
+                            {
+                                <text>No clients found with projects in your department.</text>
+                            }
+                            else
+                            {
+                                <text>No clients found.</text>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

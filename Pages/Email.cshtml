@@ -1,0 +1,249 @@
+﻿@page
+@model dashProject.Pages.EmailModel
+@using System.Data
+
+@{
+    ViewData["Title"] = "Email Management";
+}
+
+<style>
+    /* Custom Email Page Styles */
+    .email-container {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 24px;
+        margin-top: 20px; /* spacing from top navbar */
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 6px 16px rgba(0,0,0,.08);
+    }
+
+    .email-container h2 {
+        font-weight: 800;
+        margin-bottom: 14px;
+    }
+
+    .divider {
+        height: 3px;
+        background: #ffc107;
+        margin-bottom: 20px;
+        border-radius: 3px;
+    }
+
+    .email-container table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .email-container th, 
+    .email-container td {
+        padding: 14px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+    }
+
+    .email-container tr:hover {
+        background: #f9f9f9;
+        cursor: pointer;
+    }
+
+    .email-status-unread {
+        color: #dc3545;
+        font-weight: 700;
+    }
+
+    .email-status-read {
+        color: #28a745;
+        font-weight: 600;
+    }
+
+    .action-button {
+        width: 100%;
+        padding: 12px;
+        background: #ffc107;
+        border: none;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-bottom: 10px;
+    }
+
+    .action-button:hover {
+        background: #e0aa06;
+    }
+
+    .preview-label {
+        font-weight: 700;
+    }
+</style>
+
+<div class="email-container">
+
+    <!-- UNIFIED LOG LIST -->
+    <div class="card">
+        <h2>Emails & Requests</h2>
+        <div class="divider"></div>
+
+        <div style="max-height: 500px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px;">
+            <table>
+                <thead style="position: sticky; top: 0; background: #fff; z-index: 10;">
+                    <tr>
+                        <th>Type</th>
+                        <th>Sender</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (DataRow r in Model.UnifiedLog.Rows)
+                    {
+                        <tr onclick="selectItem(
+                            '@r["Id"]',
+                            '@r["Sender"]',
+                            '@r["Subject"]',
+                            '@Convert.ToDateTime(r["Date"]).ToString("MMM dd, yyyy")',
+                            '@r["Type"]'
+                        )">
+                            <td style="display:none"><textarea id="body_data_@r["Id"]">@r["Body"]</textarea></td>
+                            <td style="font-weight:700; color: @(r["Type"].ToString() == "Email" ? "#007bff" : "#6f42c1")">
+                                <i class="fas @(r["Type"].ToString() == "Email" ? "fa-envelope" : "fa-file-alt")"></i> @r["Type"]
+                            </td>
+                            <td>@r["Sender"]</td>
+                            <td>@r["Subject"]</td>
+                            <td>@Convert.ToDateTime(r["Date"]).ToShortDateString()</td>
+                            <td class="@(r["Status"].ToString() == "Unread" ? "email-status-unread" : "email-status-read")">
+                                @r["Status"]
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <form method="post" asp-page-handler="ConvertToTask" style="display:inline-block; width:48%;">
+                <input type="hidden" id="convertId" name="Id" />
+                <input type="hidden" id="convertType" name="Type" />
+                <button class="action-button">
+                    <i class="fas fa-tasks"></i> Convert to Task
+                </button>
+            </form>
+
+            <form method="post" asp-page-handler="AttachToTask" style="display:inline-block; width:48%; margin-left:2%;">
+                <input type="hidden" id="attachId" name="Id" />
+                <input type="hidden" id="attachType" name="Type" />
+                <button class="action-button">
+                    <i class="fas fa-paperclip"></i> Attach to Task
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="card">
+        <h2>Preview</h2>
+        <div class="divider"></div>
+
+        <p><span class="preview-label">From/Client:</span> <span id="pFrom">—</span></p>
+        <p><span class="preview-label">Subject:</span> <span id="pSubject">—</span></p>
+        <p><span class="preview-label">Date:</span> <span id="pDate">—</span></p>
+        <p><span class="preview-label">Type:</span> <span id="pType">—</span></p>
+
+        <hr />
+
+        <div id="previewContent" style="display:none;">
+            <div id="pBody" style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #eee; min-height: 200px; overflow-x: auto;">Select an item to preview</div>
+            
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button type="button" class="action-button" onclick="markRead()">
+                    <i class="fas fa-check"></i> Mark Read
+                </button>
+                <button type="button" class="action-button" onclick="markUnread()">
+                    <i class="fas fa-envelope"></i> Mark Unread
+                </button>
+            </div>
+        </div>
+        <p id="pPlaceholder">Select an email or request to preview</p>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        let currentId = 0;
+        let currentType = '';
+        let currentRow = null;
+
+        function selectItem(Id, from, subject, date, type) {
+            currentId = Id;
+            currentType = type;
+            currentRow = event.currentTarget.closest('tr');
+            
+            // Get the raw body from the hidden textarea
+            let body = document.getElementById("body_data_" + Id).value;
+
+            // Set hidden inputs
+            document.getElementById("convertId").value = Id;
+            document.getElementById("convertType").value = type;
+            document.getElementById("attachId").value = Id;
+            document.getElementById("attachType").value = type;
+
+            // Preview
+            document.getElementById("pFrom").innerText = from;
+            document.getElementById("pSubject").innerText = subject;
+            document.getElementById("pDate").innerText = date;
+            document.getElementById("pType").innerText = type;
+            document.getElementById("pBody").innerHTML = body;
+
+            // Show content
+            document.getElementById("previewContent").style.display = "block";
+            document.getElementById("pPlaceholder").style.display = "none";
+
+            // 🔥 Auto-mark as Read on view
+            markRead();
+        }
+
+        function markRead() {
+            if (!currentId) return;
+
+            fetch('?handler=MarkAsRead', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0].value
+                },
+                body: `id=${currentId}&type=${currentType}`
+            }).then(() => {
+                if (currentRow) {
+                    const statusCell = currentRow.cells[4]; // 5th column
+                    statusCell.innerText = 'Read';
+                    statusCell.className = 'email-status-read';
+                }
+            });
+        }
+
+        function markUnread() {
+            if (!currentId) return;
+
+            fetch('?handler=MarkAsUnread', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': document.getElementsByName('__RequestVerificationToken')[0].value
+                },
+                body: `id=${currentId}&type=${currentType}`
+            }).then(() => {
+                if (currentRow) {
+                    const statusCell = currentRow.cells[4]; // 5th column
+                    statusCell.innerText = 'Unread';
+                    statusCell.className = 'email-status-unread';
+                }
+            });
+        }
+    </script>
+}

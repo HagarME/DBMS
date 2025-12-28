@@ -1,0 +1,438 @@
+﻿@page
+@model dashProject.Pages.Settings.SecurityModel
+@{
+    ViewData["Title"] = "Security & Access";
+}
+
+
+
+<div class="settings-section">
+    <h2 class="section-title">Settings</h2>
+    <div class="settings-card">
+        <div class="row">
+            <div class="col-md-3 border-end">
+                <h5 class="config-title">Configuration</h5>
+                <ul class="config-menu">
+                    <li>
+                        <a asp-page="/Settings/Index">My Account</a>
+                    </li>
+                    <li class="active">
+                        <a asp-page="/Settings/Security">Security & Access</a>
+                    </li>
+                    <li>
+                        <a asp-page="/Settings/Notifications">Notifications</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-9 px-4">
+                <h5 class="profile-title">Security & Access</h5>
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">@TempData["Success"]</div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger">@TempData["Error"]</div>
+                }
+
+                <!-- Two-Factor Authentication Settings -->
+                <div class="settings-subsection mb-5">
+                    <h6 class="security-subtitle">
+                        <i class="fas fa-shield-alt"></i> Login Security
+                    </h6>
+                    <form method="post" asp-page-handler="Update2FA">
+                        <div class="preference-item security-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" asp-for="Enable2FALogin" onchange="this.form.submit()" />
+                                        <label class="form-check-label fw-bold">Enable Two-Factor Authentication for Login</label>
+                                    </div>
+                                    <div class="description">
+                                        <i class="fas fa-info-circle"></i>
+                                        Require a verification code sent to your email when logging in.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <noscript>
+                            <button type="submit" class="btn btn-sm btn-brand mt-2">Save Setting</button>
+                        </noscript>
+                    </form>
+                </div>
+
+                <hr class="my-4" />
+
+                <h5 class="profile-title">Change Password</h5>
+
+                @if (!Model.ShowOTPInput)
+                {
+                    <!-- Password Change Form -->
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input asp-for="CurrentPassword" type="password" class="form-control" required />
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">New Password</label>
+                                <input asp-for="NewPassword" type="password" class="form-control" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Confirm Password</label>
+                                <input asp-for="ConfirmPassword" type="password" class="form-control" required />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-brand">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <!-- OTP Verification -->
+                    <div class="otp-verification-box">
+                        <div class="otp-header-sec">
+                            <i class="fas fa-shield-alt"></i>
+                            <h4>Verify Your Identity</h4>
+                            <p>A 6-digit verification code has been sent to your email.</p>
+                        </div>
+
+                        <form method="post" asp-page-handler="VerifyOTP">
+                            <div class="mb-3">
+                                <label class="form-label">Enter Verification Code</label>
+                                <input asp-for="OTPCode"
+                                       type="text"
+                                       class="form-control otp-input-sec"
+                                       placeholder="000000"
+                                       maxlength="6"
+                                       pattern="[0-9]{6}"
+                                       autocomplete="off"
+                                       required />
+                            </div>
+
+                            <div class="otp-timer-sec" id="otpTimer">
+                                <i class="fas fa-clock"></i>
+                                <span>Code expires in: <strong id="countdown">5:00</strong></span>
+                            </div>
+
+                            <button type="submit" class="btn-brand w-100 mb-2">
+                                <i class="fas fa-check"></i> Verify Code
+                            </button>
+                        </form>
+
+                        <form method="post" asp-page-handler="ResendOTP">
+                            <button type="submit" class="btn-outline-brand w-100">
+                                <i class="fas fa-redo"></i> Resend Code
+                            </button>
+                        </form>
+
+                        <div class="text-center mt-3">
+                            <a href="/Settings/Security" class="text-muted">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.ShowOTPInput && Model.OTPExpiresAt.HasValue)
+{
+    <script>
+        // Countdown timer
+        // Use ISO format for reliable parsing
+        const expiresAtStr = '@(Model.OTPExpiresAt.HasValue ? Model.OTPExpiresAt.Value.ToString("yyyy-MM-ddTHH:mm:ss") + "Z" : "")';
+        const expiresAt = new Date(expiresAtStr);
+        const countdownElement = document.getElementById('countdown');
+        const timerElement = document.getElementById('otpTimer');
+
+        function updateCountdown() {
+            const now = new Date();
+            const diff = expiresAt - now;
+
+            if (diff <= 0) {
+                countdownElement.textContent = '0:00';
+                timerElement.style.color = '#dc3545';
+                return;
+            }
+
+            const minutes = Math.floor(diff / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            countdownElement.textContent = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+
+            if (diff < 60000) {
+                timerElement.style.color = '#ffc107';
+            }
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // Auto-focus OTP input
+        document.querySelector('.otp-input-sec')?.focus();
+    </script>
+}
+
+<style>
+
+
+    .section-title {
+        color: #ffc107;
+        font-size: 28px;
+        margin-bottom: 25px;
+        font-weight: 600;
+    }
+
+    .settings-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 30px;
+    }
+
+    .config-title {
+        color: #333;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .config-menu {
+        list-style: none;
+        padding: 0;
+    }
+
+        .config-menu li {
+            margin-bottom: 10px;
+        }
+
+        .config-menu a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            padding: 10px 15px;
+            display: block;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+            .config-menu a:hover {
+                background: #f8f9fa;
+            }
+
+        .config-menu .active {
+            background: #ffc107;
+            color: #000;
+            font-weight: 600;
+        }
+
+    .profile-title {
+        color: #333;
+        font-size: 22px;
+        margin-bottom: 25px;
+        font-weight: 600;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-control {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+
+    .btn-brand {
+        background: #ffc107;
+        color: #000;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+        .btn-brand:hover {
+            background: #e0c107;
+        }
+
+    .alert {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 6px;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .preference-item {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+    }
+
+    .security-item {
+        background: #fff8e1;
+        border: 2px solid #ffc107;
+    }
+
+    .security-subtitle {
+        color: #333;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        margin-top: 10px;
+    }
+
+        .security-subtitle i {
+            color: #ffc107;
+            margin-right: 8px;
+        }
+
+    .form-check-input {
+        width: 50px;
+        height: 25px;
+        background-color: #ccc;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+    }
+
+        .form-check-input:checked {
+            background-color: #ffc107;
+        }
+
+    .form-check-label {
+        font-weight: 600;
+        margin-left: 15px;
+        color: #333;
+    }
+
+    .description {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #666;
+    }
+
+        .description i {
+            margin-right: 5px;
+        }
+
+    .d-flex {
+        display: flex;
+    }
+
+    .justify-content-between {
+        justify-content: space-between;
+    }
+
+    .align-items-center {
+        align-items: center;
+    }
+
+    .otp-verification-box {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 10px;
+        border: 2px solid #ffc107;
+    }
+
+    .otp-header-sec {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+        .otp-header-sec i {
+            font-size: 48px;
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+
+        .otp-header-sec h4 {
+            color: #333;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+
+        .otp-header-sec p {
+            color: #666;
+            font-size: 14px;
+        }
+
+    .otp-input-sec {
+        text-align: center;
+        font-size: 24px;
+        letter-spacing: 8px;
+        font-weight: bold;
+    }
+
+    .otp-timer-sec {
+        text-align: center;
+        margin: 15px 0;
+        color: #666;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+        .otp-timer-sec i {
+            margin-right: 5px;
+        }
+
+    .btn-outline-brand {
+        background: transparent;
+        color: #ffc107;
+        border: 2px solid #ffc107;
+        padding: 12px 30px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+        .btn-outline-brand:hover {
+            background: rgba(255, 193, 7, 0.1);
+        }
+
+    .w-100 {
+        width: 100%;
+    }
+
+    .mb-2 {
+        margin-bottom: 10px;
+    }
+
+    .mt-3 {
+        margin-top: 15px;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .text-muted {
+        color: #6c757d;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+        .text-muted:hover {
+            color: #ffc107;
+        }
+</style>

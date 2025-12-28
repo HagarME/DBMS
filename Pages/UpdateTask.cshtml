@@ -1,0 +1,195 @@
+﻿@page "{id:int}"
+@using System.Data
+@model dashProject.Pages.UpdateTaskModel
+@{
+    ViewData["Title"] = "Update Task";
+    Layout = null;
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        background: #f4f6f9;
+        color: #333;
+    }
+
+    /* Page container */
+    .page-wrapper {
+        max-width: 800px;
+        margin: 80px auto;
+        padding: 0 20px;
+    }
+
+    /* Card */
+    .card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 28px;
+        box-shadow: 0 6px 16px rgba(0,0,0,.08);
+        margin-bottom: 25px;
+    }
+
+    h2 {
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .divider {
+        height: 3px;
+        background: #ffc107;
+        margin-bottom: 24px;
+        border-radius: 3px;
+    }
+
+    /* Email box */
+    .email-box {
+        background: #f1fbfd;
+        border-left: 6px solid #17a2b8;
+    }
+
+        .email-box h3 {
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: #0c5460;
+        }
+
+    /* Form */
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    input, textarea, select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        background: #f9f9f9;
+        font-size: 14px;
+    }
+
+    textarea {
+        min-height: 70px;
+        resize: vertical;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+        gap: 20px;
+    }
+
+    /* Button */
+    button {
+        background: #ffc107;
+        border: none;
+        padding: 12px 22px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+        button:hover {
+            background: #e0aa06;
+        }
+
+    /* Back link */
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        text-decoration: none;
+        color: #555;
+        font-weight: 600;
+    }
+
+        .back-link i {
+            margin-right: 6px;
+            color: #ffc107;
+        }
+</style>
+
+<div class="page-wrapper">
+
+    <!-- Email source (OLD FUNCTIONALITY PRESERVED) -->
+    @if (Model.FromEmail)
+    {
+        <div class="card email-box">
+            <h3><i class="fas fa-envelope"></i> Source Email</h3>
+            <p><strong>From:</strong> @Model.EmailSender</p>
+            <p><strong>Subject:</strong> @Model.EmailSubject</p>
+            <p><strong>Date:</strong> @Model.EmailDate.ToShortDateString()</p>
+            <hr style="margin: 15px 0;" />
+            <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #dee2e6; overflow-x: auto;">
+                @Html.Raw(Model.EmailBody)
+            </div>
+        </div>
+    }
+
+    <!-- Main Form Card -->
+    <div class="card">
+        <h2>Update Task</h2>
+        <div class="divider"></div>
+
+        <form method="post">
+
+            <input type="hidden" asp-for="TaskId" />
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea asp-for="Description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Assigning Department</label>
+                <select asp-for="DeptId">
+                    @foreach (DataRow d in Model.departments.Rows)
+                    {
+                        <option value="@d["dept_id"]">@d["specialization"]</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Employee SSN</label>
+                <input asp-for="EmpSSN" />
+            </div>
+
+            <div class="grid">
+                <div class="form-group">
+                    <label>Assignment Date</label>
+                    <input asp-for="AssignDate" type="date" />
+                </div>
+
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <input asp-for="Deadline" type="date" />
+                </div>
+            </div>
+
+            <br />
+
+            <button type="submit">
+                <i class="fas fa-save"></i> Update Task
+            </button>
+        </form>
+
+        <a asp-page="/Tasks" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Tasks
+        </a>
+    </div>
+
+</div>

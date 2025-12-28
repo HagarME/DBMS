@@ -1,0 +1,49 @@
+﻿@page
+@model dashProject.Pages.AddDepartmentModel
+@{
+    ViewData["Title"] = "Add New Department";
+}
+
+<form method="post">
+    <div class="section-box">
+        <h4 class="section-title">Department Information</h4>
+
+        <div class="grid-2">
+            <div>
+                <label>Specialization <span class="required-star">*</span></label>
+                <input asp-for="Specialization" type="text" class="input-field" placeholder="e.g., IT, HR, Finance" required />
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Description</label>
+            <textarea asp-for="Description" class="input-field" placeholder="Enter department description..."></textarea>
+        </div>
+    </div>
+
+    <div class="section-box">
+        <h4 class="section-title">Department Manager</h4>
+
+        <div>
+            <label>Manager</label>
+            <select asp-for="MgrSsn" class="select-field">
+                <option value="">-- No Manager --</option>
+                @foreach (System.Data.DataRow row in Model.AllEmployees.Rows)
+                {
+                    <option value="@row["ssn"]">
+                        @row["Fname"] @row["Lname"] (@row["ssn"])
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="primary-btn">
+                <i class="fas fa-save"></i> Add Department
+            </button>
+            <a asp-page="/Departments" class="secondary-btn">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </div>
+</form>

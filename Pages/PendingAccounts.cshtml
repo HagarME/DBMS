@@ -1,0 +1,64 @@
+@page
+@using System.Data
+@model dashProject.Pages.PendingAccountsModel
+@{
+    ViewData["Title"] = "Pending Accounts";
+}
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h3 style="color: #ffc107; margin:0;">Pending Account Requests</h3>
+    <span style="color:#888; font-size:14px;">Total Pending: <b>@Model.PendingList.Rows.Count</b></span>
+</div>
+
+<div style="background: #fff; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #eee; overflow: hidden;">
+    <div style="max-height: 600px; overflow-y: auto; overflow-x: auto;">
+        <table style="width:100%; border-collapse:separate; border-spacing: 0;">
+            <thead style="position: sticky; top: 0; z-index: 10;">
+                <tr style="text-align:left;">
+                    <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Name</th>
+                    <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Email</th>
+                    <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Requested Role</th>
+                    <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Date</th>
+                    <th style="background:#fff; color:#ffc107; padding:15px 12px; font-weight: 700; border-bottom: 2px solid #ffc107; white-space: nowrap; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.05);">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.PendingList.Rows.Count > 0)
+                {
+                    @foreach (DataRow row in Model.PendingList.Rows)
+                    {
+                        <tr style="border-bottom:1px solid #eee; transition: background 0.2s;" onmouseover="this.style.background='#fffbeb'" onmouseout="this.style.background='white'">
+                            <td style="padding:15px 12px; font-weight:600; border-bottom: 1px solid #f3f4f6;">@row["FullName"]</td>
+                            <td style="padding:15px 12px; border-bottom: 1px solid #f3f4f6;">@row["Email"]</td>
+                            <td style="padding:15px 12px; border-bottom: 1px solid #f3f4f6;">
+                                <span style="background:#e9f7fe; color:#3182ce; padding:4px 8px; border-radius:4px; font-size:12px; font-weight: 600;">@row["Role"]</span>
+                            </td>
+                            <td style="padding:15px 12px; color:#666; font-size:13px; border-bottom: 1px solid #f3f4f6;">@Convert.ToDateTime(row["RequestDate"]).ToShortDateString()</td>
+                            <td style="padding:15px 12px; white-space:nowrap; border-bottom: 1px solid #f3f4f6;">
+                                <div style="display:flex; gap:8px;">
+                                    <a asp-page="/ModifyPendingAccount" asp-route-requestId="@row["RequestID"]" class="btn-standard btn-yellow" title="Modify & Approve">
+                                        <i class="fas fa-edit"></i> Review
+                                    </a>
+                                    <form method="post" asp-page-handler="Delete" asp-route-requestId="@row["RequestID"]" onsubmit="return confirm('Reject this account request?');" style="margin:0;">
+                                        <button type="submit" class="btn-standard btn-red">
+                                            <i class="fas fa-trash-alt"></i> Reject
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" style="padding:40px; text-align:center; color:#888;">
+                            <i class="fas fa-check-circle" style="font-size:40px; color:#ddd; margin-bottom:10px; display:block;"></i>
+                            No pending requests at the moment.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

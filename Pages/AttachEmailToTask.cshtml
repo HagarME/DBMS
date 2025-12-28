@@ -1,0 +1,18 @@
+﻿@page "{Id:int}"
+@model dashProject.Pages.AttachEmailToTaskModel
+
+<h2>Attach Email to Existing Task</h2>
+
+<form method="post">
+    <label>Select Task</label>
+    <select asp-for="TaskId">
+        @foreach (System.Data.DataRow r in Model.Tasks.Rows)
+        {
+            <option value="@r["task_id"]">
+                @r["task_id"] - @r["description"]
+            </option>
+        }
+    </select>
+
+    <button type="submit">Attach Email</button>
+</form>
